@@ -4,7 +4,7 @@ use std::time::{Duration, Instant};
 /// retried.
 pub trait Backoff {
     /// If the backoff implementation should allow for the library to retry the failed function.
-    fn should_try_again(&mut self, iterations: usize) -> bool;
+    fn backoff_period(&mut self, iterations: u32) -> Duration;
 }
 
 /// A [Backoff](crate::backoff::Backoff) implementation that exponentially
@@ -19,16 +19,9 @@ pub struct ExponentialBackoff {
 }
 
 impl Backoff for ExponentialBackoff {
-    fn should_try_again(&mut self, iterations: usize) -> bool {
+    fn backoff_period(&mut self, iterations: u32) -> Duration {
         let y = 1.25f32.powi(iterations as i32) - 1.0;
-        let duration = Duration::from_millis((y * 100.0) as u64);
-
-        if self.instant.elapsed() >= duration {
-            self.instant = Instant::now();
-            true
-        } else {
-            false
-        }
+        Duration::from_millis((y * 100.0) as u64)
     }
 }
 
@@ -45,7 +38,7 @@ impl Default for ExponentialBackoff {
 pub struct ImmediateBackoff;
 
 impl Backoff for ImmediateBackoff {
-    fn should_try_again(&mut self, _iterations: usize) -> bool {
-        true
+    fn backoff_period(&mut self, _iterations: u32) -> Duration {
+        Duration::from_secs(0)
     }
 }

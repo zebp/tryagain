@@ -59,7 +59,7 @@ pub fn retry_if<B, F, P, T, E>(mut backoff: B, func: F, predicate: P) -> Result<
 where
     B: Backoff,
     F: Fn() -> Result<T, E>,
-    P: Fn(&E, usize) -> bool,
+    P: Fn(&E, u32) -> bool,
 {
     let mut iterations = 0;
 
@@ -71,12 +71,7 @@ where
                     return Err(e);
                 }
 
-                loop {
-                    if backoff.should_try_again(iterations) {
-                        break;
-                    }
-                    std::thread::yield_now();
-                }
+                std::thread::sleep(backoff.backoff_period(iterations));
             }
         }
 
