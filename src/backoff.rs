@@ -1,11 +1,18 @@
 use std::time::{Duration, Instant};
 
-/// TODO: Document
+/// The implementation of the algorithm used to time when failures should he
+/// retried.
 pub trait Backoff {
     /// If the backoff implementation should allow for the library to retry the failed function.
     fn should_try_again(&mut self, iterations: usize) -> bool;
 }
 
+/// A [Backoff](crate::backoff::Backoff) implementation that exponentially
+/// increases the delay between attempts.
+///
+/// # Details
+/// Currently [ExponentialBackoff](crate::backoff::ExponentialBackoff) uses the
+/// formula `delay = 100(1.125^iterations - 1)` measured in milliseconds.
 #[derive(Debug, Clone, Copy)]
 pub struct ExponentialBackoff {
     instant: Instant,
