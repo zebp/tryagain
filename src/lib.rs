@@ -5,3 +5,4 @@ mod sync;
 mod backoff;
 
 pub use backoff::*;
+pub use sync::*;
