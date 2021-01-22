@@ -39,3 +39,13 @@ impl Default for ExponentialBackoff {
         }
     }
 }
+
+/// A [Backoff](crate::backoff::Backoff) implementation that doesn't have
+/// any delay and retries immediately.
+pub struct ImmediateBackoff;
+
+impl Backoff for ImmediateBackoff {
+    fn should_try_again(&mut self, _iterations: usize) -> bool {
+        true
+    }
+}
