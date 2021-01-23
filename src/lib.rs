@@ -1,9 +1,8 @@
 #![forbid(unsafe_code)]
 
-#[macro_use]
-extern crate pin_project;
-
+#[cfg(any(feature = "runtime-tokio", feature = "runtime-async-std"))]
 pub mod future;
+
 mod sync;
 mod backoff;
 
