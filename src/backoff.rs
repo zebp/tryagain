@@ -12,15 +12,26 @@ pub trait Backoff {
 ///
 /// # Details
 /// Currently [ExponentialBackoff](crate::backoff::ExponentialBackoff) uses the
-/// formula `delay = 100(1.125^iterations - 1)` measured in milliseconds.
+/// formula `delay = 100(base^iterations - 1)` measured in milliseconds.
 #[derive(Debug, Clone, Copy)]
 pub struct ExponentialBackoff {
+    base: f32,
     instant: Instant,
+}
+
+impl ExponentialBackoff {
+    /// Creates an [ExponentialBackoff](Self) with a base for the exponential
+    /// function used to calculate backoff duration.
+    ///
+    /// Equation: `delay = 100(base^iterations - 1)`
+    pub fn with_base(base: f32, instant: Instant) -> Self {
+        Self { base, instant }
+    }
 }
 
 impl Backoff for ExponentialBackoff {
     fn backoff_period(&mut self, iterations: u32) -> Duration {
-        let y = 1.25f32.powi(iterations as i32) - 1.0;
+        let y = self.base.powi(iterations as i32) - 1.0;
         Duration::from_millis((y * 100.0) as u64)
     }
 }
@@ -28,6 +39,7 @@ impl Backoff for ExponentialBackoff {
 impl Default for ExponentialBackoff {
     fn default() -> Self {
         Self {
+            base: 1.25,
             instant: Instant::now(),
         }
     }
