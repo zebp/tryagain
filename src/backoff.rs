@@ -24,8 +24,8 @@ impl ExponentialBackoff {
     /// function used to calculate backoff duration.
     ///
     /// Equation: `delay = 100(base^iterations - 1)`
-    pub fn with_base(base: f32, instant: Instant) -> Self {
-        Self { base, instant }
+    pub fn with_base(base: f32) -> Self {
+        Self { base, instant: Instant::now() }
     }
 }
 
@@ -74,5 +74,41 @@ impl<T: Backoff> MinimumBackoff<T> {
 impl<T: Backoff> Backoff for MinimumBackoff<T> {
     fn backoff_period(&mut self, iterations: u32) -> Duration {
         self.min_duration.max(self.inner.backoff_period(iterations))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn text_default_exponential() {
+        let mut backoff = ExponentialBackoff::default();
+
+        assert_eq!(backoff.backoff_period(0), Duration::from_millis(0));
+        assert_eq!(backoff.backoff_period(1), Duration::from_millis(25));
+        assert_eq!(backoff.backoff_period(2), Duration::from_millis(56));
+        assert_eq!(backoff.backoff_period(3), Duration::from_millis(95));
+    }
+
+    #[test]
+    fn test_exponential_with_base() {
+        let mut backoff = ExponentialBackoff::with_base(10.0);
+
+        assert_eq!(backoff.backoff_period(0), Duration::from_millis(00000));
+        assert_eq!(backoff.backoff_period(1), Duration::from_millis(00900));
+        assert_eq!(backoff.backoff_period(2), Duration::from_millis(09900));
+        assert_eq!(backoff.backoff_period(3), Duration::from_millis(99900));
+    }
+
+    #[test]
+    fn test_immediate() {
+        assert_eq!(ImmediateBackoff.backoff_period(0), Duration::from_millis(0));
+    }
+
+    #[test]
+    fn test_minimum() {
+        let mut backoff = MinimumBackoff::new(ImmediateBackoff, Duration::from_secs(1));
+        assert_eq!(backoff.backoff_period(0), Duration::from_secs(1));
     }
 }
