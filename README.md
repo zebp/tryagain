@@ -19,17 +19,33 @@ feature flags `runtime-tokio` and `runtime-async-std`.
 
 ## Sync example
 ```rust
-fn fails() -> Result<(), i32> {
-    Err(0)
-}
-// Will never resolve into, will spin forever.
-let value = tryagain::retry(ImmediateBackoff, fails);
+let counter = Rc::new(RefCell::new(0));
+let fails_four_times = || {
+    let mut counter = counter.borrow_mut();
+    *counter += 1;
+
+    if *counter < 5 {
+        Err(*counter)
+    } else {
+        Ok(())
+    }
+};
+
+tryagain::retry(ImmediateBackoff, fails_four_times);
 ```
 ## Async example
 ```rust
-async fn fails() -> Result<(), i32> {
-    Err(0)
-}
-// Will never resolve into, will spin forever.
-let value = tryagain::future::retry(ImmediateBackoff, fails).await;
+let counter = Rc::new(RefCell::new(0));
+let fails_four_times = || async {
+    let mut counter = counter.borrow_mut();
+    *counter += 1;
+
+    if *counter < 5 {
+        Err(*counter)
+    } else {
+        Ok(())
+    }
+};
+
+tryagain::future::retry(ImmediateBackoff, fails_four_times).await;
 ```
