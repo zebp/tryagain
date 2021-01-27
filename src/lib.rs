@@ -21,7 +21,7 @@
 //! #   return Ok(()); // So our doctests pass.
 //!     Err(0)
 //! }
-//! 
+//!
 //! // Will never resolve into, will spin forever.
 //! let value = tryagain::future::retry(ImmediateBackoff, fails).await;
 //! # };
@@ -32,8 +32,8 @@
 #[cfg(any(feature = "runtime-tokio", feature = "runtime-async-std"))]
 pub mod future;
 
-mod sync;
 mod backoff;
+mod sync;
 
 pub use backoff::*;
 pub use sync::*;

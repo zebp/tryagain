@@ -39,11 +39,11 @@ where
 ///     Recoverable,
 ///     Fatal,
 /// }
-/// 
+///
 /// fn returns_fatal_error() -> Result<(), Error> {
 ///     Err(Error::Fatal)
 /// }
-/// 
+///
 /// // Returns a Result of Error::Fatal
 /// let result = tryagain::retry_if(
 ///     ExponentialBackoff::default(),

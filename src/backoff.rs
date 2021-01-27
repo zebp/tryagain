@@ -25,7 +25,10 @@ impl ExponentialBackoff {
     ///
     /// Equation: `delay = 100(base^iterations - 1)`
     pub fn with_base(base: f32) -> Self {
-        Self { base, instant: Instant::now() }
+        Self {
+            base,
+            instant: Instant::now(),
+        }
     }
 }
 
