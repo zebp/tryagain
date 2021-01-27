@@ -20,7 +20,7 @@ pub struct ExponentialBackoff {
 }
 
 impl ExponentialBackoff {
-    /// Creates an [ExponentialBackoff](Self) with a base for the exponential
+    /// Creates an [ExponentialBackoff](crate::backoff::ExponentialBackoff) with a base for the exponential
     /// function used to calculate backoff duration.
     ///
     /// Equation: `delay = 100(base^iterations - 1)`
@@ -52,5 +52,27 @@ pub struct ImmediateBackoff;
 impl Backoff for ImmediateBackoff {
     fn backoff_period(&mut self, _iterations: u32) -> Duration {
         Duration::from_secs(0)
+    }
+}
+
+/// A [Backoff](crate::backoff::Backoff) implementation with a minimum duration
+/// that must be reached before a retry attempt can be made.
+pub struct MinimumBackoff<T: Backoff> {
+    inner: T,
+    min_duration: Duration,
+}
+
+impl<T: Backoff> MinimumBackoff<T> {
+    pub fn new(inner: T, min_duration: Duration) -> Self {
+        Self {
+            inner,
+            min_duration,
+        }
+    }
+}
+
+impl<T: Backoff> Backoff for MinimumBackoff<T> {
+    fn backoff_period(&mut self, iterations: u32) -> Duration {
+        self.min_duration.max(self.inner.backoff_period(iterations))
     }
 }

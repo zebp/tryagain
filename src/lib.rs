@@ -28,7 +28,6 @@
 //! ```
 
 #![forbid(unsafe_code)]
-#![forbid(missing_docs)]
 
 #[cfg(any(feature = "runtime-tokio", feature = "runtime-async-std"))]
 pub mod future;
