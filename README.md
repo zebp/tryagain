@@ -19,7 +19,7 @@ feature flags `runtime-tokio` and `runtime-async-std`.
 
 ## Sync example
 ```rust
-let counter = Rc::new(RefCell::new(0));
+let counter = RefCell::new(0);
 let fails_four_times = || {
     let mut counter = counter.borrow_mut();
     *counter += 1;
@@ -35,7 +35,7 @@ tryagain::retry(ImmediateBackoff, fails_four_times);
 ```
 ## Async example
 ```rust
-let counter = Rc::new(RefCell::new(0));
+let counter = RefCell::new(0);
 let fails_four_times = || async {
     let mut counter = counter.borrow_mut();
     *counter += 1;
