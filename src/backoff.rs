@@ -1,4 +1,4 @@
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 /// The implementation of the algorithm used to time when failures should he
 /// retried.
@@ -16,7 +16,6 @@ pub trait Backoff {
 #[derive(Debug, Clone, Copy)]
 pub struct ExponentialBackoff {
     base: f32,
-    instant: Instant,
 }
 
 impl ExponentialBackoff {
@@ -27,7 +26,6 @@ impl ExponentialBackoff {
     pub fn with_base(base: f32) -> Self {
         Self {
             base,
-            instant: Instant::now(),
         }
     }
 }
@@ -43,7 +41,6 @@ impl Default for ExponentialBackoff {
     fn default() -> Self {
         Self {
             base: 1.25,
-            instant: Instant::now(),
         }
     }
 }
