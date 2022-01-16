@@ -3,7 +3,7 @@ use std::time::Duration;
 /// The implementation of the algorithm used to time when failures should he
 /// retried.
 pub trait Backoff {
-    /// If the backoff implementation should allow for the library to retry the failed function.
+    /// The duration that must be waited until the function is tried again.
     fn backoff_period(&mut self, iterations: u32) -> Duration;
 }
 
